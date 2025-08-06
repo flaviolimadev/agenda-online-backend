@@ -17,7 +17,9 @@ RUN npm ci --only=production=false
 
 # Copiar código fonte
 COPY src/ ./src/
-COPY test/ ./test/
+
+# Criar pasta test se não existir (para evitar erros)
+RUN mkdir -p test
 
 # Build da aplicação
 RUN npm run build
@@ -43,6 +45,9 @@ RUN npm ci --only=production && npm cache clean --force
 
 # Copiar arquivos buildados do stage anterior
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+
+# Copiar arquivo de health check
+COPY healthcheck.js ./
 
 # Mudar para usuário não-root
 USER nestjs

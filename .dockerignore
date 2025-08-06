@@ -101,14 +101,11 @@ Dockerfile*
 docker-compose*
 .dockerignore
 
-# Documentation
-README.md
-*.md
+# Documentation (manter README para referência)
+# README.md
+# *.md
 
-# Test files
-test/
+# Test files (não excluir completamente, apenas arquivos de teste)
+# test/
 *.spec.ts
-*.test.ts
-
-# Scripts
-scripts/ 
+*.test.ts 
