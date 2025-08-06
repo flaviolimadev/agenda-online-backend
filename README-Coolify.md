@@ -105,6 +105,7 @@ Configure as seguintes variáveis no Coolify:
 | Variável | Descrição | Valor Padrão |
 |----------|-----------|--------------|
 | `NODE_ENV` | Ambiente | `production` |
+| `NODE_OPTIONS` | Opções do Node.js | `--max-old-space-size=4096` |
 | `PORT` | Porta da aplicação | `3001` |
 | `DB_HOST` | Host do banco | `agenda-db` |
 | `DB_PORT` | Porta do banco | `5432` |
@@ -148,6 +149,12 @@ Configure as seguintes variáveis no Coolify:
 1. Verifique se todos os arquivos TypeScript estão corretos
 2. Confirme que o `tsconfig.json` está configurado
 3. Verifique se há erros de sintaxe
+
+### Erro: "ReferenceError: crypto is not defined"
+
+**Problema**: Módulo crypto não está disponível no Node.js.
+
+**Solução**: ✅ **Corrigido** - Adicionado polyfill para crypto e atualizado para Node.js 20.
 
 ### Erro: "Health check failed"
 

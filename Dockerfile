@@ -2,7 +2,7 @@
 # Multi-stage build para otimizar o tamanho da imagem final
 
 # Stage 1: Build da aplicação
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Definir diretório de trabalho
 WORKDIR /app
@@ -25,10 +25,10 @@ RUN mkdir -p test
 RUN npm run build
 
 # Stage 2: Produção
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 # Instalar dependências de produção
-RUN apk add --no-cache dumb-init
+RUN apk add --no-cache dumb-init curl
 
 # Criar usuário não-root para segurança
 RUN addgroup -g 1001 -S nodejs
@@ -36,6 +36,10 @@ RUN adduser -S nestjs -u 1001
 
 # Definir diretório de trabalho
 WORKDIR /app
+
+# Configurar variáveis de ambiente do Node.js
+ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Copiar package.json e package-lock.json
 COPY package*.json ./
@@ -57,7 +61,7 @@ EXPOSE 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
+  CMD curl -f http://localhost:3001/health || exit 1
 
 # Comando para iniciar a aplicação
 CMD ["dumb-init", "node", "dist/main.js"] 
