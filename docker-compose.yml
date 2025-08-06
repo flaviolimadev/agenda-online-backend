@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Backend - Agenda API
+  agenda-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agenda-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DB_HOST=agenda-db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=123456
+      - DB_DATABASE=agenda_db
+      - JWT_SECRET=da0f624b767fc436623e9a8485e42fbe1e303478333f7a0ac9ced9db6c4ec46d69bc676c2e2fee055591456b624b85f3f485f66573e31d161ebb5328f5906b3f
+      - JWT_EXPIRES_IN=7d
+    depends_on:
+      - agenda-db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - agenda-network
+
+  # Database PostgreSQL
+  agenda-db:
+    image: postgres:15-alpine
+    container_name: agenda-db
+    environment:
+      - POSTGRES_DB=agenda_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d agenda_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agenda-network
+
+networks:
+  agenda-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
